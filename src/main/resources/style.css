@@ -1,0 +1,194 @@
+/* =========================
+   MENU
+   ========================= */
+
+.menu-bar {
+    -fx-padding: 0;
+    -fx-background-color: rgba(244, 244, 244, 0.9);
+    -fx-border-color: #cccccc;
+}
+
+.menu {
+    -fx-padding: 5 10 5 10;
+}
+
+.context-menu {
+    -fx-padding: 0;
+}
+
+.menu-item {
+    -fx-padding: 10 15 10 15;
+}
+
+
+/* =========================
+   LAYOUT / CONTAINERS
+   ========================= */
+
+.vbox-center {
+    -fx-background-color: white;
+}
+
+
+/* =========================
+   TABLE VIEW
+   ========================= */
+
+.table-view:focused {
+    -fx-padding: 0;
+    -fx-border-color: #eeeeee;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: white;
+}
+
+.table-view .column-header .label {
+    -fx-padding: 10 0 10 20;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.table-view .column-header:last-visible .label {
+    -fx-alignment: CENTER_RIGHT;
+    -fx-max-width: Infinity;
+}
+
+.table-cell {
+    -fx-padding: 10px 20px;
+}
+
+.amount-column {
+    -fx-alignment: CENTER_RIGHT;
+    -fx-padding: 0 20 0 0;
+}
+
+
+/* =========================
+   TOOLBAR
+   ========================= */
+
+.toolbar {
+    -fx-padding: 45 20 45 20;
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+}
+
+
+/* =========================
+   ACTION BUTTONS
+   ========================= */
+
+.action-button {
+    -fx-padding: 8;
+    -fx-background-color: rgba(244, 244, 244, 0.5);
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5;
+}
+
+#delete-button {
+    -fx-border-color: grey;
+    -fx-background-color: white;
+    -fx-text-fill: grey;
+    -fx-font-weight: bold;
+    -fx-padding: 8;
+    -fx-border-radius: 5;
+}
+
+
+/* =========================
+   MONTH NAVIGATION
+   ========================= */
+
+.month-label {
+    -fx-padding: 20;
+    -fx-background-color: white;
+    -fx-pref-width: 250px;
+    -fx-alignment: CENTER;
+}
+
+.arrows-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+    -fx-border-color: transparent;
+    -fx-padding: 5;
+    -fx-font-size: 24px;
+}
+
+.arrows-button:hover {
+    -fx-text-fill: #000;
+}
+
+.today-button {
+    -fx-background-color: rgba(244, 244, 244, 0.5);
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5;
+    -fx-padding: 5 12;
+}
+
+.today-button:hover {
+    -fx-background-color: #eeeeee;
+}
+
+.today-month {
+    -fx-padding: 0 20 0 0;
+    -fx-background-color: white;
+}
+
+
+/* =========================
+   SUMMARY SECTION
+   ========================= */
+
+.summary-bar {
+    -fx-padding: 10 10 10 20;
+    -fx-alignment: center-right;
+    -fx-background-color: white;
+}
+
+.summary-value {
+    -fx-font-weight: bold;
+}
+
+.summary-balance {
+    -fx-font-weight: bold;
+}
+/* =========================
+   TABLE ROW SELECTION
+   ========================= */
+
+.table-row-cell:selected {
+    -fx-background-color: #e8e8e8;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+}
+
+
+/* =========================
+   SELECTED ROW STYLE
+   ========================= */
+
+
+.table-row-cell:selected .table-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: black;
+}
+/* =========================
+   TABLE AMOUNT COLORS
+   ========================= */
+
+.amount-cell {
+    -fx-alignment: CENTER-RIGHT;
+}
+
+.positive-amount {
+    -fx-text-fill: #4a9f5d; /* delikatna zieleń */
+}
+
+.negative-amount {
+    -fx-text-fill: #d66a6a; /* delikatna czerwień */
+}
