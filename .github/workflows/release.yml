@@ -1,0 +1,208 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+
+jobs:
+
+  build-windows:
+
+    name: Build Windows Installer
+    runs-on: windows-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+
+      - name: Build application
+        run: mvn clean package
+
+
+      - name: Find application jar
+        id: jar
+        shell: bash
+        run: |
+          echo "jar=$(ls target/*.jar | grep -v original | xargs -n1 basename)" >> $GITHUB_OUTPUT
+
+
+      - name: Create Windows installer
+        run: |
+          jpackage ^
+          --type exe ^
+          --name Budget ^
+          --input target ^
+          --main-jar ${{ steps.jar.outputs.jar }} ^
+          --main-class com.nolabke.Main ^
+          --dest installer ^
+          --win-shortcut ^
+          --win-menu
+
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: installer/*.exe
+
+
+
+  build-linux:
+
+    name: Build Linux Installer
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+
+      - name: Build application
+        run: mvn clean package
+
+
+      - name: Find application jar
+        id: jar
+        shell: bash
+        run: |
+          echo "jar=$(ls target/*.jar | grep -v original | xargs -n1 basename)" >> $GITHUB_OUTPUT
+
+
+      - name: Create Linux package
+        run: |
+          jpackage \
+          --type deb \
+          --name Budget \
+          --input target \
+          --main-jar ${{ steps.jar.outputs.jar }} \
+          --main-class com.nolabke.Main \
+          --dest installer
+
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-installer
+          path: installer/*.deb
+
+
+
+  build-macos:
+
+    name: Build macOS Installer
+    runs-on: macos-latest
+
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+
+      - name: Build application
+        run: mvn clean package
+
+
+      - name: Find application jar
+        id: jar
+        shell: bash
+        run: |
+          echo "jar=$(ls target/*.jar | grep -v original | xargs -n1 basename)" >> $GITHUB_OUTPUT
+
+
+      - name: Create macOS package
+        run: |
+          jpackage \
+          --type dmg \
+          --name Budget \
+          --input target \
+          --main-jar ${{ steps.jar.outputs.jar }} \
+          --main-class com.nolabke.Main \
+          --dest installer
+
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-installer
+          path: installer/*.dmg
+
+
+
+  release:
+
+    name: Create GitHub Release
+
+    needs:
+      - build-windows
+      - build-linux
+      - build-macos
+
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release
+
+
+
+      - name: Create version.json
+        shell: bash
+        run: |
+
+          VERSION=${GITHUB_REF_NAME#v}
+
+          cat > release/version.json <<EOF
+          {
+            "version": "$VERSION"
+          }
+          EOF
+
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+
+          files: |
+            release/**/*
+            release/version.json
+
+          generate_release_notes: true

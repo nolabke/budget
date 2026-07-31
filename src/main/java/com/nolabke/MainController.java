@@ -9,10 +9,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.awt.*;
+import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -58,12 +63,6 @@ public class MainController implements Initializable {
     private MenuItem langDeItem;
 
     private Stage primaryStage;
-
-    @FXML
-    private TabPane mainTabs;
-
-    @FXML
-    private Tab budgetTab;
 
     public void setStage(Stage stage) {
         this.primaryStage = stage;
@@ -260,16 +259,77 @@ public class MainController implements Initializable {
 
         if (updateService.isUpdateAvailable()) {
 
-            showAlert(
-                    Messages.get("update.title"),
+            String downloadUrl = updateService.getDownloadUrl();
+
+            Alert alert = new Alert(
+                    Alert.AlertType.INFORMATION
+            );
+
+            alert.setTitle(
+                    Messages.get("update.title")
+            );
+
+            alert.setHeaderText(
                     Messages.get("update.available")
             );
+
+            alert.setContentText(
+                    Messages.get("update.download")
+            );
+
+
+            ButtonType downloadButton =
+                    new ButtonType(
+                            Messages.get("update.download")
+                    );
+
+            ButtonType cancelButton =
+                    new ButtonType(
+                            Messages.get("button.cancel"),
+                            ButtonBar.ButtonData.CANCEL_CLOSE
+                    );
+
+
+            alert.getButtonTypes().setAll(
+                    downloadButton,
+                    cancelButton
+            );
+
+
+            alert.showAndWait()
+                    .ifPresent(button -> {
+
+                        if (button == downloadButton) {
+
+                            openBrowser(downloadUrl);
+
+                        }
+
+                    });
+
 
         } else {
 
             showAlert(
                     Messages.get("update.title"),
                     Messages.get("update.latest")
+            );
+        }
+    }
+    private void openBrowser(String url) {
+
+        try {
+
+            Desktop.getDesktop()
+                    .browse(
+                            URI.create(url)
+                    );
+
+        } catch (Exception e) {
+
+            showAlert(
+                    Messages.get("update.title"),
+                    Messages.get("update.error")
             );
         }
     }

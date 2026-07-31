@@ -8,7 +8,6 @@ import com.nolabke.model.BudgetEntry;
 import com.nolabke.utils.AppDirectories;
 import com.nolabke.utils.AppLogger;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -102,7 +101,7 @@ public class BudgetStorage {
             AppLogger.error(
                     "Cannot save budget",
                     e
-            );;
+            );
         }
     }
 }
