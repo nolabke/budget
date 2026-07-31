@@ -1,0 +1,26 @@
+[ {
+  "id" : "9b4fa1e6-e677-4b4f-9af2-12a3e6cde071",
+  "date" : [ 2026, 7, 11 ],
+  "description" : "Miete",
+  "amount" : -800.00
+}, {
+  "id" : "6f72837d-9ac6-43bd-9757-2955a98f83be",
+  "date" : [ 2026, 7, 1 ],
+  "description" : "Gehalt",
+  "amount" : 3060.00
+}, {
+  "id" : "8f67d2ff-7827-451a-a345-6f459aba5157",
+  "date" : [ 2026, 7, 16 ],
+  "description" : "Strom",
+  "amount" : 116.00
+}, {
+  "id" : "7067f166-f3bf-4f54-bba4-47cd5518c1c7",
+  "date" : [ 2026, 7, 21 ],
+  "description" : "KV",
+  "amount" : -427.00
+}, {
+  "id" : "34cd6ff2-b5c4-47e5-840a-6bbfa907e24e",
+  "date" : [ 2026, 7, 29 ],
+  "description" : "Autoreparatur",
+  "amount" : -3000
+} ]

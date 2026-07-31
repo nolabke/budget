@@ -42,12 +42,13 @@ jobs:
 
 
       - name: Create Windows installer
+        shell: cmd
         run: |
           jpackage ^
           --type exe ^
           --name Budget ^
           --input target ^
-          --main-jar ${{ steps.jar.outputs.jar }} ^
+          --main-jar budget-1.0.0.jar ^
           --main-class com.nolabke.Main ^
           --dest installer ^
           --win-shortcut ^
