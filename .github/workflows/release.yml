@@ -22,10 +22,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
@@ -53,7 +53,7 @@ jobs:
         run: |
           jlink `
           --module-path "$env:JAVA_HOME\jmods;javafx-jmods-${{ env.JAVAFX_VERSION }}" `
-          --add-modules java.base,java.desktop,java.logging,java.net.http,java.xml,java.prefs,javafx.base,javafx.graphics,javafx.controls,javafx.fxml `
+          --add-modules java.base,java.desktop,java.logging,java.net.http,java.xml,java.prefs,jdk.localedata,javafx.base,javafx.graphics,javafx.controls,javafx.fxml `
           --output runtime
 
           runtime\bin\java --version
@@ -74,7 +74,7 @@ jobs:
           --win-console
 
       - name: Upload Windows
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: windows-installer
           path: "*.exe"
@@ -86,10 +86,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
@@ -112,7 +112,7 @@ jobs:
         run: |
           jlink \
           --module-path "$JAVA_HOME/jmods:javafx-jmods-${{ env.JAVAFX_VERSION }}" \
-           --add-modules java.base,java.desktop,java.logging,java.net.http,java.xml,java.prefs,javafx.base,javafx.graphics,javafx.controls,javafx.fxml \
+          --add-modules java.base,java.desktop,java.logging,java.net.http,java.xml,java.prefs,jdk.localedata,javafx.base,javafx.graphics,javafx.controls,javafx.fxml \
           --output runtime
 
       - name: Create DEB
@@ -127,7 +127,7 @@ jobs:
           --type deb
 
       - name: Upload Linux
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: linux-installer
           path: "*.deb"
@@ -139,10 +139,10 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
@@ -168,7 +168,7 @@ jobs:
         run: |
           jlink \
           --module-path "$JAVA_HOME/jmods:javafx-jmods-${{ env.JAVAFX_VERSION }}" \
-          --add-modules java.base,java.desktop,java.logging,java.net.http,java.xml,java.prefs,javafx.base,javafx.graphics,javafx.controls,javafx.fxml \
+          --add-modules java.base,java.desktop,java.logging,java.net.http,java.xml,java.prefs,jdk.localedata,javafx.base,javafx.graphics,javafx.controls,javafx.fxml
           --output runtime
 
       - name: Create DMG
@@ -183,7 +183,7 @@ jobs:
           --type dmg
 
       - name: Upload macOS
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: macos-installer
           path: "*.dmg"
@@ -202,7 +202,7 @@ jobs:
     steps:
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
 
       - name: Release
         uses: softprops/action-gh-release@v2

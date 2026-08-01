@@ -539,9 +539,7 @@ public class BudgetController implements Initializable {
                     inputDate.setValue(entry.getDate());
                     descriptionField.setText(entry.getDescription());
                     amountField.setText(
-                            entry.getAmount()
-                                    .setScale(2)
-                                    .toString()
+                            formatAmount(entry.getAmount())
                     );
                 });
     }
