@@ -11,8 +11,8 @@ permissions:
 env:
   APP_NAME: Budget
   MAIN_CLASS: com.nolabke.Main
-  JAVA_VERSION: "21"
-  JAVAFX_VERSION: "21.0.8"
+  JAVA_VERSION: "25"
+  JAVAFX_VERSION: "25.0.1"
 
 jobs:
 
