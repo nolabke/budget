@@ -34,6 +34,11 @@ jobs:
       - name: Build Maven
         run: mvn clean package
 
+      - name: Get application version
+        shell: bash
+        run: |
+          echo "APP_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
       - name: Download JavaFX jmods
         shell: powershell
         run: |
@@ -59,7 +64,7 @@ jobs:
           jpackage `
           --name $env:APP_NAME `
           --input target `
-          --main-jar budget-1.0.0.jar `
+          --main-jar budget-${{ env.APP_VERSION }}.jar `
           --main-class $env:MAIN_CLASS `
           --runtime-image runtime `
           --java-options "--enable-native-access=javafx.graphics" `
@@ -93,6 +98,11 @@ jobs:
       - name: Build Maven
         run: mvn clean package
 
+      - name: Get application version
+        shell: bash
+        run: |
+          echo "APP_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
       - name: Download JavaFX jmods
         run: |
           wget https://download2.gluonhq.com/openjfx/${{ env.JAVAFX_VERSION }}/openjfx-${{ env.JAVAFX_VERSION }}_linux-x64_bin-jmods.zip
@@ -110,7 +120,7 @@ jobs:
           jpackage \
           --name ${{ env.APP_NAME }} \
           --input target \
-          --main-jar budget-1.0.0.jar \
+          --main-jar budget-${{ env.APP_VERSION }}.jar \
           --main-class ${{ env.MAIN_CLASS }} \
           --runtime-image runtime \
           --java-options "--enable-native-access=javafx.graphics" \
@@ -141,6 +151,11 @@ jobs:
       - name: Build Maven
         run: mvn clean package
 
+      - name: Get application version
+        shell: bash
+        run: |
+          echo "APP_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
       - name: Download JavaFX jmods
         run: |
           curl -L \
@@ -161,7 +176,7 @@ jobs:
           jpackage \
           --name ${{ env.APP_NAME }} \
           --input target \
-          --main-jar budget-1.0.0.jar \
+          --main-jar budget-${{ env.APP_VERSION }}.jar \
           --main-class ${{ env.MAIN_CLASS }} \
           --runtime-image runtime \
           --java-options "--enable-native-access=javafx.graphics" \
