@@ -48,7 +48,7 @@ jobs:
         run: |
           jlink `
           --module-path "$env:JAVA_HOME\jmods;javafx-jmods-${{ env.JAVAFX_VERSION }}" `
-          --add-modules java.base,java.desktop,java.logging,javafx.base,javafx.graphics,javafx.controls,javafx.fxml `
+          --add-modules java.base,java.desktop,java.logging,java.net.http,java.xml,java.prefs,javafx.base,javafx.graphics,javafx.controls,javafx.fxml `
           --output runtime
 
           runtime\bin\java --version

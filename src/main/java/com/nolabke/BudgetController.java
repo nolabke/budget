@@ -9,6 +9,7 @@ import com.nolabke.service.UpdateService;
 import com.nolabke.utils.AppLogger;
 import com.nolabke.utils.DateUtils;
 import com.nolabke.utils.Messages;
+import com.nolabke.utils.NumberParser;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -188,7 +189,7 @@ public class BudgetController implements Initializable {
 
         try {
 
-            amount = new BigDecimal(
+            amount = NumberParser.parse(
                     amountField.getText()
             );
 
@@ -255,7 +256,7 @@ public class BudgetController implements Initializable {
                         selected.getId(),
                         inputDate.getValue(),
                         descriptionField.getText(),
-                        new BigDecimal(
+                        NumberParser.parse(
                                 amountField.getText())
                 );
 
