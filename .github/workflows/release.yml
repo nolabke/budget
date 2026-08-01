@@ -46,33 +46,34 @@ jobs:
       - name: Create runtime
         shell: powershell
         run: |
-
           jlink `
           --module-path "$env:JAVA_HOME\jmods;javafx-jmods-${{ env.JAVAFX_VERSION }}" `
-          --add-modules java.base,java.desktop,javafx.controls,javafx.fxml `
+          --add-modules java.base,java.desktop,javafx.base,javafx.graphics,javafx.controls,javafx.fxml `
           --output runtime
 
-          dir runtime\bin
+          runtime\bin\java --version
 
       - name: Create EXE
         shell: powershell
         run: |
-
           jpackage `
           --name $env:APP_NAME `
           --input target `
           --main-jar budget-1.0.0.jar `
           --main-class $env:MAIN_CLASS `
           --runtime-image runtime `
+          --java-options "--enable-native-access=javafx.graphics" `
           --type exe `
           --win-menu `
-          --win-shortcut
+          --win-shortcut `
+          --win-console
 
       - name: Upload Windows
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
           path: "*.exe"
+
 
 
   build-linux:
@@ -92,21 +93,27 @@ jobs:
       - name: Build Maven
         run: mvn clean package
 
+      - name: Download JavaFX jmods
+        run: |
+          wget https://download2.gluonhq.com/openjfx/${{ env.JAVAFX_VERSION }}/openjfx-${{ env.JAVAFX_VERSION }}_linux-x64_bin-jmods.zip
+          unzip openjfx-${{ env.JAVAFX_VERSION }}_linux-x64_bin-jmods.zip
+
       - name: Create runtime
         run: |
           jlink \
-          --module-path "$JAVA_HOME/jmods" \
-          --add-modules java.base,java.desktop \
+          --module-path "$JAVA_HOME/jmods:javafx-jmods-${{ env.JAVAFX_VERSION }}" \
+          --add-modules java.base,java.desktop,javafx.base,javafx.graphics,javafx.controls,javafx.fxml \
           --output runtime
 
       - name: Create DEB
         run: |
           jpackage \
-          --name Budget \
+          --name ${{ env.APP_NAME }} \
           --input target \
           --main-jar budget-1.0.0.jar \
-          --main-class com.nolabke.Main \
+          --main-class ${{ env.MAIN_CLASS }} \
           --runtime-image runtime \
+          --java-options "--enable-native-access=javafx.graphics" \
           --type deb
 
       - name: Upload Linux
@@ -134,21 +141,30 @@ jobs:
       - name: Build Maven
         run: mvn clean package
 
+      - name: Download JavaFX jmods
+        run: |
+          curl -L \
+          -o javafx.zip \
+          https://download2.gluonhq.com/openjfx/${{ env.JAVAFX_VERSION }}/openjfx-${{ env.JAVAFX_VERSION }}_osx-x64_bin-jmods.zip
+
+          unzip javafx.zip
+
       - name: Create runtime
         run: |
           jlink \
-          --module-path "$JAVA_HOME/jmods" \
-          --add-modules java.base,java.desktop \
+          --module-path "$JAVA_HOME/jmods:javafx-jmods-${{ env.JAVAFX_VERSION }}" \
+          --add-modules java.base,java.desktop,javafx.base,javafx.graphics,javafx.controls,javafx.fxml \
           --output runtime
 
       - name: Create DMG
         run: |
           jpackage \
-          --name Budget \
+          --name ${{ env.APP_NAME }} \
           --input target \
           --main-jar budget-1.0.0.jar \
-          --main-class com.nolabke.Main \
+          --main-class ${{ env.MAIN_CLASS }} \
           --runtime-image runtime \
+          --java-options "--enable-native-access=javafx.graphics" \
           --type dmg
 
       - name: Upload macOS
