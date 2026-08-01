@@ -1,7 +1,8 @@
 package com.nolabke.utils;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.*;
 
 public final class AppLogger {
@@ -9,89 +10,61 @@ public final class AppLogger {
     private static final Logger LOGGER =
             Logger.getLogger("NoLabke");
 
-    private static final String LOG_FOLDER = "logs";
     private static final String LOG_FILE = "nolabke.log";
 
-
     static {
-
         configure();
     }
-
 
     private AppLogger() {
         // utility class
     }
 
-
     private static void configure() {
 
         try {
 
-            File folder =
-                    new File(LOG_FOLDER);
+            Path logDirectory =
+                    AppDirectories.getDataDirectory()
+                            .resolve("logs");
 
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-
+            Files.createDirectories(logDirectory);
 
             FileHandler handler =
                     new FileHandler(
-                            LOG_FOLDER + File.separator + LOG_FILE,
+                            logDirectory.resolve(LOG_FILE).toString(),
                             true
                     );
 
-
-            handler.setFormatter(
-                    new SimpleFormatter()
-            );
-
-
-            LOGGER.addHandler(handler);
+            handler.setFormatter(new SimpleFormatter());
 
             LOGGER.setUseParentHandlers(false);
+            LOGGER.setLevel(Level.ALL);
+            LOGGER.addHandler(handler);
 
+        } catch (IOException exception) {
 
-            LOGGER.setLevel(
-                    Level.ALL
-            );
-
-
-        } catch (IOException e) {
-
-            System.err.println(
-                    "Cannot initialize logger"
-            );
-
-            e.printStackTrace();
+            System.err.println("Cannot initialize logger");
+            exception.printStackTrace();
         }
     }
 
-
     public static Logger getLogger() {
-
         return LOGGER;
     }
 
-
     public static void info(String message) {
-
         LOGGER.info(message);
     }
 
-
     public static void warning(String message) {
-
         LOGGER.warning(message);
     }
-
 
     public static void error(
             String message,
             Exception exception
     ) {
-
         LOGGER.log(
                 Level.SEVERE,
                 message,

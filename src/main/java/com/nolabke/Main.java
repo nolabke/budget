@@ -6,9 +6,11 @@ import com.nolabke.utils.Messages;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -39,6 +41,14 @@ public class Main extends Application {
 
         stage.setTitle(Messages.get("app.title"));
         stage.setScene(scene);
+
+        stage.getIcons().add(
+                new Image(
+                        Objects.requireNonNull(
+                                getClass().getResourceAsStream("/images/icon.png")
+                        )
+                )
+        );
 
         stage.show();
         AppLogger.info(
