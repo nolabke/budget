@@ -3,207 +3,180 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
 
+env:
+  APP_NAME: Budget
+  MAIN_CLASS: com.nolabke.Main
+  JAVA_VERSION: "21"
+  JAVAFX_VERSION: "21.0.8"
 
 jobs:
 
   build-windows:
-
-    name: Build Windows Installer
+    name: Windows installer
     runs-on: windows-latest
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
-
-      - name: Setup Java
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '25'
+          java-version: ${{ env.JAVA_VERSION }}
           cache: maven
 
-
-      - name: Build application
+      - name: Build Maven
         run: mvn clean package
 
-
-      - name: Find application jar
-        id: jar
-        shell: bash
+      - name: Download JavaFX jmods
+        shell: powershell
         run: |
-          echo "jar=$(ls target/*.jar | grep -v original | xargs -n1 basename)" >> $GITHUB_OUTPUT
+          Invoke-WebRequest `
+            -Uri "https://download2.gluonhq.com/openjfx/${{ env.JAVAFX_VERSION }}/openjfx-${{ env.JAVAFX_VERSION }}_windows-x64_bin-jmods.zip" `
+            -OutFile javafx.zip
 
+          Expand-Archive javafx.zip -DestinationPath .
 
-      - name: Create Windows installer
-        shell: cmd
+      - name: Create runtime
+        shell: powershell
         run: |
-          jpackage ^
-          --type exe ^
-          --name Budget ^
-          --input target ^
-          --main-jar budget-1.0.0.jar ^
-          --main-class com.nolabke.Main ^
-          --dest installer ^
-          --win-shortcut ^
-          --win-menu
 
+          jlink `
+          --module-path "$env:JAVA_HOME\jmods;javafx-jmods-${{ env.JAVAFX_VERSION }}" `
+          --add-modules java.base,java.desktop,javafx.controls,javafx.fxml `
+          --output runtime
 
-      - name: Upload Windows artifact
+          dir runtime\bin
+
+      - name: Create EXE
+        shell: powershell
+        run: |
+
+          jpackage `
+          --name $env:APP_NAME `
+          --input target `
+          --main-jar budget-1.0.0.jar `
+          --main-class $env:MAIN_CLASS `
+          --runtime-image runtime `
+          --type exe `
+          --win-menu `
+          --win-shortcut
+
+      - name: Upload Windows
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: installer/*.exe
-
+          path: "*.exe"
 
 
   build-linux:
-
-    name: Build Linux Installer
+    name: Linux installer
     runs-on: ubuntu-latest
 
-
     steps:
+      - uses: actions/checkout@v4
 
-      - name: Checkout
-        uses: actions/checkout@v4
-
-
-      - name: Setup Java
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '25'
+          java-version: ${{ env.JAVA_VERSION }}
           cache: maven
 
-
-      - name: Build application
+      - name: Build Maven
         run: mvn clean package
 
-
-      - name: Find application jar
-        id: jar
-        shell: bash
+      - name: Create runtime
         run: |
-          echo "jar=$(ls target/*.jar | grep -v original | xargs -n1 basename)" >> $GITHUB_OUTPUT
+          jlink \
+          --module-path "$JAVA_HOME/jmods" \
+          --add-modules java.base,java.desktop \
+          --output runtime
 
-
-      - name: Create Linux package
+      - name: Create DEB
         run: |
           jpackage \
-          --type deb \
           --name Budget \
           --input target \
-          --main-jar ${{ steps.jar.outputs.jar }} \
+          --main-jar budget-1.0.0.jar \
           --main-class com.nolabke.Main \
-          --dest installer
+          --runtime-image runtime \
+          --type deb
 
-
-      - name: Upload Linux artifact
+      - name: Upload Linux
         uses: actions/upload-artifact@v4
         with:
           name: linux-installer
-          path: installer/*.deb
+          path: "*.deb"
 
 
 
   build-macos:
-
-    name: Build macOS Installer
+    name: macOS installer
     runs-on: macos-latest
 
-
     steps:
+      - uses: actions/checkout@v4
 
-      - name: Checkout
-        uses: actions/checkout@v4
-
-
-      - name: Setup Java
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '25'
+          java-version: ${{ env.JAVA_VERSION }}
           cache: maven
 
-
-      - name: Build application
+      - name: Build Maven
         run: mvn clean package
 
-
-      - name: Find application jar
-        id: jar
-        shell: bash
+      - name: Create runtime
         run: |
-          echo "jar=$(ls target/*.jar | grep -v original | xargs -n1 basename)" >> $GITHUB_OUTPUT
+          jlink \
+          --module-path "$JAVA_HOME/jmods" \
+          --add-modules java.base,java.desktop \
+          --output runtime
 
-
-      - name: Create macOS package
+      - name: Create DMG
         run: |
           jpackage \
-          --type dmg \
           --name Budget \
           --input target \
-          --main-jar ${{ steps.jar.outputs.jar }} \
+          --main-jar budget-1.0.0.jar \
           --main-class com.nolabke.Main \
-          --dest installer
+          --runtime-image runtime \
+          --type dmg
 
-
-      - name: Upload macOS artifact
+      - name: Upload macOS
         uses: actions/upload-artifact@v4
         with:
           name: macos-installer
-          path: installer/*.dmg
+          path: "*.dmg"
 
 
 
   release:
-
     name: Create GitHub Release
-
     needs:
       - build-windows
       - build-linux
       - build-macos
 
-
     runs-on: ubuntu-latest
-
 
     steps:
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
-        with:
-          path: release
 
-
-
-      - name: Create version.json
-        shell: bash
-        run: |
-
-          VERSION=${GITHUB_REF_NAME#v}
-
-          cat > release/version.json <<EOF
-          {
-            "version": "$VERSION"
-          }
-          EOF
-
-
-      - name: Create Release
+      - name: Release
         uses: softprops/action-gh-release@v2
         with:
-
           files: |
-            release/**/*
-            release/version.json
-
-          generate_release_notes: true
+            windows-installer/*.exe
+            linux-installer/*.deb
+            macos-installer/*.dmg
