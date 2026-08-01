@@ -112,7 +112,7 @@ jobs:
         run: |
           jlink \
           --module-path "$JAVA_HOME/jmods:javafx-jmods-${{ env.JAVAFX_VERSION }}" \
-          --add-modules java.base,java.desktop,javafx.base,javafx.graphics,javafx.controls,javafx.fxml \
+           --add-modules java.base,java.desktop,java.logging,java.net.http,java.xml,java.prefs,javafx.base,javafx.graphics,javafx.controls,javafx.fxml \
           --output runtime
 
       - name: Create DEB
@@ -168,7 +168,7 @@ jobs:
         run: |
           jlink \
           --module-path "$JAVA_HOME/jmods:javafx-jmods-${{ env.JAVAFX_VERSION }}" \
-          --add-modules java.base,java.desktop,javafx.base,javafx.graphics,javafx.controls,javafx.fxml \
+          --add-modules java.base,java.desktop,java.logging,java.net.http,java.xml,java.prefs,javafx.base,javafx.graphics,javafx.controls,javafx.fxml \
           --output runtime
 
       - name: Create DMG
