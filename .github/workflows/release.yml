@@ -195,6 +195,11 @@ jobs:
           --java-options "--enable-native-access=javafx.graphics" \
           --type dmg
 
+      - name: Check generated DMG
+        run: |
+          ls -la
+          find . -name "*.dmg"
+
       - name: Rename macOS installer
         run: |
           mv \
