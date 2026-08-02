@@ -72,7 +72,6 @@ jobs:
           --type exe `
           --win-menu `
           --win-shortcut `
-          --win-console
 
       - name: Upload Windows
         uses: actions/upload-artifact@v5
