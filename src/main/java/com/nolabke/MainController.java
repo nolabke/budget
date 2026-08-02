@@ -2,6 +2,7 @@ package com.nolabke;
 
 import com.nolabke.config.AppInfo;
 import com.nolabke.service.UpdateService;
+import com.nolabke.utils.AppLogger;
 import com.nolabke.utils.AppSettings;
 import com.nolabke.utils.Messages;
 import javafx.application.Platform;
@@ -307,7 +308,6 @@ public class MainController implements Initializable {
 
                     });
 
-
         } else {
 
             showAlert(
@@ -320,12 +320,40 @@ public class MainController implements Initializable {
 
         try {
 
-            Desktop.getDesktop()
-                    .browse(
-                            URI.create(url)
-                    );
+            String os =
+                    System.getProperty("os.name")
+                            .toLowerCase();
+
+            if (os.contains("win")) {
+
+                new ProcessBuilder(
+                        "rundll32",
+                        "url.dll,FileProtocolHandler",
+                        url
+                ).start();
+
+            } else if (os.contains("mac")) {
+
+                new ProcessBuilder(
+                        "open",
+                        url
+                ).start();
+
+            } else {
+
+                new ProcessBuilder(
+                        "xdg-open",
+                        url
+                ).start();
+            }
+
 
         } catch (Exception e) {
+
+            AppLogger.error(
+                    "Cannot open browser",
+                    e
+            );
 
             showAlert(
                     Messages.get("update.title"),

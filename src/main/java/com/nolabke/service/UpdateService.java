@@ -1,5 +1,7 @@
 package com.nolabke.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nolabke.config.AppInfo;
 import com.nolabke.utils.AppLogger;
 
@@ -13,6 +15,7 @@ public class UpdateService {
     private static final String VERSION_URL =
             "https://api.github.com/repos/nolabke/budget/releases/latest";
 
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private String getLatestReleaseJson() {
 
@@ -54,14 +57,17 @@ public class UpdateService {
 
         try {
 
-            return json
-                    .split("\"tag_name\":\"")[1]
-                    .split("\"")[0];
+            JsonNode root =
+                    mapper.readTree(json);
+
+            return root.get("tag_name")
+                    .asText();
 
         } catch (Exception e) {
 
-            AppLogger.warning(
-                    "Cannot read latest version"
+            AppLogger.error(
+                    "Cannot read latest version",
+                    e
             );
 
             return null;
@@ -79,49 +85,72 @@ public class UpdateService {
 
         try {
 
-            String os = System
-                    .getProperty("os.name")
-                    .toLowerCase();
+            JsonNode root =
+                    mapper.readTree(json);
+
+
+            String os =
+                    System.getProperty("os.name")
+                            .toLowerCase();
 
 
             String extension;
 
-
             if (os.contains("win")) {
                 extension = ".exe";
-            }
-            else if (os.contains("mac")) {
+
+            } else if (os.contains("mac")) {
                 extension = ".dmg";
-            }
-            else {
+
+            } else {
                 extension = ".deb";
             }
 
 
-            String assets =
-                    json.split("\"assets\":\\[")[1]
-                            .split("]")[0];
+            String architecture =
+                    getArchitecture();
 
 
-            String[] files =
-                    assets.split("\\},\\{");
+            JsonNode assets =
+                    root.get("assets");
 
 
-            for (String file : files) {
+            if (assets == null || !assets.isArray()) {
+                return null;
+            }
 
-                if (file.contains(extension)) {
 
-                    return file
-                            .split("\"browser_download_url\":\"")[1]
-                            .split("\"")[0];
+            for (JsonNode asset : assets) {
+
+                String name =
+                        asset.get("name")
+                                .asText()
+                                .toLowerCase();
+
+
+                boolean correctExtension =
+                        name.endsWith(extension);
+
+
+                boolean correctArchitecture =
+                        name.contains(architecture);
+
+
+                if (correctExtension
+                        && correctArchitecture) {
+
+                    return asset
+                            .get("browser_download_url")
+                            .asText();
                 }
             }
 
 
         } catch (Exception e) {
 
-            AppLogger.warning(
-                    "Cannot find update download URL"
+            AppLogger.error(
+                    "Cannot parse update information",
+                    e
             );
         }
 
@@ -177,5 +206,29 @@ public class UpdateService {
         }
 
         return false;
+    }
+
+    private String getArchitecture() {
+
+        String arch = System
+                .getProperty("os.arch")
+                .toLowerCase();
+
+
+        if (arch.equals("amd64")
+                || arch.equals("x86_64")) {
+
+            return "amd64";
+        }
+
+
+        if (arch.equals("aarch64")
+                || arch.equals("arm64")) {
+
+            return "arm64";
+        }
+
+
+        return arch;
     }
 }

@@ -73,6 +73,13 @@ jobs:
           --win-shortcut `
           --win-console
 
+      - name: Rename Windows installer
+        shell: powershell
+        run: |
+          Rename-Item `
+            Budget-${{ env.APP_VERSION }}.exe `
+            budget_${{ env.APP_VERSION }}_amd64.exe
+
       - name: Upload Windows
         uses: actions/upload-artifact@v5
         with:
@@ -125,6 +132,12 @@ jobs:
           --runtime-image runtime \
           --java-options "--enable-native-access=javafx.graphics" \
           --type deb
+
+      - name: Rename Linux installer
+        run: |
+          mv \
+          budget_${APP_VERSION}_amd64.deb \
+          budget_${APP_VERSION}_amd64.deb
 
       - name: Upload Linux
         uses: actions/upload-artifact@v5
@@ -181,6 +194,12 @@ jobs:
           --runtime-image runtime \
           --java-options "--enable-native-access=javafx.graphics" \
           --type dmg
+
+      - name: Rename macOS installer
+        run: |
+          mv \
+          Budget-${APP_VERSION}.dmg \
+          budget_${APP_VERSION}_amd64.dmg
 
       - name: Upload macOS
         uses: actions/upload-artifact@v5
