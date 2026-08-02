@@ -63,6 +63,7 @@ jobs:
         run: |
           jpackage `
           --name $env:APP_NAME `
+          --app-version ${{ env.APP_VERSION }} `
           --input target `
           --main-jar budget-${{ env.APP_VERSION }}.jar `
           --main-class $env:MAIN_CLASS `
@@ -126,6 +127,7 @@ jobs:
         run: |
           jpackage \
           --name ${{ env.APP_NAME }} \
+          --app-version ${{ env.APP_VERSION }} \
           --input target \
           --main-jar budget-${{ env.APP_VERSION }}.jar \
           --main-class ${{ env.MAIN_CLASS }} \
@@ -188,6 +190,7 @@ jobs:
         run: |
           jpackage \
           --name ${{ env.APP_NAME }} \
+          --app-version ${{ env.APP_VERSION }} \
           --input target \
           --main-jar budget-${{ env.APP_VERSION }}.jar \
           --main-class ${{ env.MAIN_CLASS }} \
